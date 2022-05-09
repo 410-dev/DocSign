@@ -1,0 +1,6 @@
+
+*.DS_Store
+*.jar
+.vscode
+*.class
+src/test/*
