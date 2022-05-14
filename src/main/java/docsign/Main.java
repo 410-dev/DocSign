@@ -30,7 +30,7 @@ public class Main {
 
     private static void update(String[] args) {
         Versioning.setBuildNum(300);
-        Versioning.setUpdateCheckerURL("");
+        Versioning.setUpdateCheckerURL("https://raw.githubusercontent.com/410-dev/DocSign/main/latest");
         Versioning.useStableRelease();
 
         try {
