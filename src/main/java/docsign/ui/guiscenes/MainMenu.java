@@ -154,15 +154,38 @@ public class MainMenu extends JPanel implements Scene {
         cli.setUseWeakSign(useWeakSign.isSelected());
         cli.setMailAddress(UserIdentity.getCurrentIdentity().getEmail());
 
-        cli.action();
-
-        if (cli.output.contains("Signature is not valid.") || cli.output.contains("Invalid") || cli.output.contains("Signature not found.")) {
+        int result = cli.action();
+        
+        
+        if (cli.output.contains("Signature is not valid.") || cli.output.contains(" is null") || cli.output.contains("Invalid") || cli.output.contains("Signature not found.")) {
             output.setForeground(java.awt.Color.RED);
         } else if (cli.output.contains("Signature is valid.")) {
-            output.setForeground(java.awt.Color.GREEN);
+            output.setForeground(new java.awt.Color(0, 100, 0, 255));
         } else {
             output.setForeground(java.awt.Color.BLACK);
         }
+
+        switch(result) {
+            case 0:
+                break;
+
+            case 1:
+                cli.output = "Signature not found.";
+                break;
+
+            case 2:
+                // cli.output = "Signature is not valid.";
+                break;
+
+            case 255:
+                cli.output = "An error occurred wile processing.";
+                break;
+
+            default:
+                cli.output = "Unknown action: " + result;
+                break;
+        }
+
         output.setText("<html>" + cli.output.replace("\n", "<br>") + "</html>");
     }
 

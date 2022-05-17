@@ -1,17 +1,23 @@
 package docsign.signutil;
 
 import docsign.Sign;
+import docsign.SignState;
+import docsign.util.CoreBase64;
 import docsign.util.CoreHEX;
+import docsign.util.CoreSHA;
 
 public class WriteSignature {
     public static void writeSignature(String document, int daysValid, boolean useWeakSign) throws Exception {
         Sign s = new Sign(daysValid, useWeakSign);
-        String signature = s.toString();
+        s.setSignState(new SignState());
 
         // Write signature to file
-        String hex = CoreHEX.stringToHex(signature);
-        String fhex = CoreHEX.readFileToHex(document);
-        String newHex = fhex + hex;
+        String fileHex = CoreHEX.readFileToHex(document);
+        String unsignedContent = CoreBase64.encode(CoreHEX.hexToString(fileHex));
+        unsignedContent = CoreSHA.hash512(unsignedContent);
+        s.setUnsignedHash(unsignedContent);
+        String signatureHex = CoreHEX.stringToHex(s.toString());
+        String newHex = fileHex + signatureHex;
 
         // Get file extension
         String ext = document.substring(document.lastIndexOf(".") + 1);

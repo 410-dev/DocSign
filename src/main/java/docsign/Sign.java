@@ -20,29 +20,25 @@ public class Sign {
     private String version;
     private String name;
     private String email;
-    private String uuid;
-    private String digestedUUID;
     private long signedAt;
     private long validthrough;
-
+    @Setter private String unsignedHash;
+    
     @Getter @Setter private SignState signState;
 
-    public Sign(String version, String name, String email, String uuid, String digestedUUID, long signedAt, long validthrough) throws Exception {
+    public Sign(String version, String name, String email, long signedAt, long validthrough, String unsignedHash) throws Exception {
         this.version = version;
         this.name = name;
         this.email = email;
-        this.uuid = uuid;
-        this.digestedUUID = digestedUUID;
         this.signedAt = signedAt;
         this.validthrough = validthrough;
+        this.unsignedHash = unsignedHash;
     }
 
     public Sign(int daysValid, boolean useWeakSign) throws Exception {
         this.version = VERSION;
         this.name = UserIdentity.getCurrentIdentity().getName();
         this.email = useWeakSign ? "" : UserIdentity.getCurrentIdentity().getEmail();
-        this.uuid = UserIdentity.getCurrentIdentity().getUuid();
-        digestedUUID = CoreAES.encrypt(uuid, email);
         this.signedAt = System.currentTimeMillis() / 1000;
         this.validthrough = this.signedAt + (60 * 60 * 24 * daysValid);
     }
@@ -50,7 +46,6 @@ public class Sign {
     public Sign(Identity identity, int validityInDays) {
         this.name = identity.getName();
         this.email = identity.getEmail();
-        this.uuid = identity.getUuid();
         this.signedAt = System.currentTimeMillis() / 1000;
         this.validthrough = this.signedAt + (validityInDays * 24 * 60 * 60);
     }
@@ -58,7 +53,7 @@ public class Sign {
     public boolean equals(Object obj) {
         if (obj instanceof Sign) {
             Sign other = (Sign) obj;
-            return this.uuid.equals(other.uuid);
+            return this.unsignedHash.equals(other.unsignedHash);
         }
         return false;
     }
@@ -68,10 +63,9 @@ public class Sign {
         obj.addProperty("version", VERSION);
         obj.addProperty("name", name);
         obj.addProperty("email", email);
-        obj.addProperty("uuid", uuid);
-        obj.addProperty("digesteduuid", digestedUUID);
         obj.addProperty("signedAt", signedAt);
         obj.addProperty("validthrough", validthrough);
+        obj.addProperty("unsignedHash", unsignedHash);
         return obj;
     }
 
@@ -91,16 +85,11 @@ public class Sign {
         s += "\nVersion: " + version;
         s += "\nName: " + name;
         s += "\nEmail: " + email;
-        s += "\nUUID: " + uuid;
         s += "\nSigned At: " + getSignedDate();
         s += "\nValid Through: " + getValidDate();
         s += "\nCurrently valid: " + ((System.currentTimeMillis() / 1000L < validthrough) ? "Yes" : "No");
+        s += "\nUnsigned Hash: " + unsignedHash;
         return s;
-    }
-
-    public SignState isValid(String email) throws Exception {
-        long UNIX_TIMESTAMP = System.currentTimeMillis() / 1000L;
-        return new SignState(VERSION, version, this.email, email, UNIX_TIMESTAMP < validthrough, (CoreAES.decrypt(digestedUUID, email).equals(uuid)));
     }
 
     public String getValidDate() {
@@ -122,10 +111,9 @@ public class Sign {
                 obj.get("version").getAsString(),
                 obj.get("name").getAsString(),
                 obj.get("email").getAsString(),
-                obj.get("uuid").getAsString(),
-                obj.get("digesteduuid").getAsString(),
                 obj.get("signedAt").getAsLong(),
-                obj.get("validthrough").getAsLong()
+                obj.get("validthrough").getAsLong(),
+                obj.get("unsignedHash").getAsString()
         );
     }
 }

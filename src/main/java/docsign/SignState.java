@@ -1,23 +1,27 @@
 package docsign;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class SignState {
-    private String signerVersion;
+    private String signerVersion = Sign.VERSION;
     private String signedVersion;
+
+    private String unsignedContentExpectedSHA;
+    private String unsignedContentActualSHA;
 
     private boolean dateValid;
     private boolean emailMatches;
-    private boolean uuidMatches;
+    private boolean unsignedHashMatches;
+    private boolean signatureValid;
 
-    public SignState(String signerVersion, String signedVersion, String expectedMailAddress, String signerMailAddress, boolean dateValid, boolean uuidValid) {
-        this.signerVersion = signerVersion;
-        this.signedVersion = signedVersion;
-        this.dateValid = dateValid;
-        this.emailMatches = signerMailAddress.equals(expectedMailAddress);
-        this.uuidMatches = uuidValid;
-
-        if (expectedMailAddress.equals("")) this.emailMatches = true;
+    public void checkValidty(Sign signature, String mail) {
+        dateValid = signature.getSignedAt() < signature.getValidthrough();
+        signedVersion = signature.getVersion();
+        emailMatches = signature.getEmail().equals(mail);
+        unsignedHashMatches = unsignedContentActualSHA.equals(unsignedContentExpectedSHA);
+        signatureValid = dateValid && emailMatches && unsignedHashMatches;
     }
 }

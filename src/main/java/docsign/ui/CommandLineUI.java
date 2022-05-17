@@ -9,9 +9,9 @@ import java.util.UUID;
 import docsign.Database;
 import docsign.Identity;
 import docsign.Sign;
+import docsign.SignState;
 import docsign.signutil.ReadSignature;
 import docsign.signutil.UserIdentity;
-import docsign.signutil.VerifySignature;
 import docsign.signutil.WriteSignature;
 import docsign.util.CoreSHA;
 import docsign.util.RecursiveFileSearch;
@@ -126,63 +126,75 @@ public class CommandLineUI {
                 // Action parse
                 switch (actionFlag) {
                     case ACTION_READSIGN:
-                        {// Read and verify signature
-                        Sign s = ReadSignature.readSign(documentPath);
-                        output += "\n\n" + s.toReadableString();
-                        returnval = 0;}
+                        {
+                            // Read and verify signature
+                            Sign s = ReadSignature.readSign(documentPath, mailToVerify, useWeakSign);
+                            if (s == null) {
+                                output += ("\nSignature not found.");
+                                returnval = 1;
+                            }else{
+                                output += "\n\n" + s.toReadableString();
+                                returnval = 0;
+                            }
+                        }
                         break;
 
                     case ACTION_VERIFY:
-                        {// Verify signature
-                        Sign s = ReadSignature.readSign(documentPath);
-                        s = VerifySignature.verifySignature(mailToVerify, documentPath);
+                        {
+                            // Verify signature
+                            Sign s = ReadSignature.readSign(documentPath, mailToVerify, useWeakSign);
+                            SignState sstate = s.getSignState();
 
-                        if (s == null) {
-                            output += ("\nSignature not found.");
-                            returnval = 1;
-                        }else{
-                            output += "\n\n";
-                            output += s.toReadableString() + "\n";
-
-                            output += ("\nValidity:");
-                            output += ("\nSign Version: " + (s.getSignState().getSignedVersion().equals(Sign.VERSION) ? "OK" : "WARNING"));
-                            output += ("\nMail Matches: " + (s.getSignState().isEmailMatches() ? "OK" : "Invalid"));
-                            output += ("\nUUID Matches: " + (s.getSignState().isUuidMatches() ? "OK" : "Invalid"));
-                            output += ("\nTime Valids: " + (s.getSignState().isDateValid() ? "OK" : "Invalid"));
-
-                            if (s.getSignState().isDateValid() && s.getSignState().isEmailMatches() && s.getSignState().isUuidMatches()) {
-                                output += ("\n\nSignature is valid.");
-                                returnval = 0;
-                            } else {
-                                output += ("\n\nSignature is not valid.");
+                            if (s == null || sstate == null) {
+                                output += ("\nSignature not found.");
                                 returnval = 1;
+                            }else{
+                                output += "\n\n";
+                                output += s.toReadableString() + "\n";
+
+                                output += ("\nValidity:");
+                                output += ("\nSign Version: " + (sstate.getSignedVersion().equals(Sign.VERSION) ? "OK" : "WARNING"));
+                                output += ("\nMail Matches: " + (sstate.isEmailMatches() ? "OK" : "Invalid"));
+                                output += ("\nTime Valids: " + (sstate.isDateValid() ? "OK" : "Invalid"));
+                                output += ("\nUnsigC Matches: " + (sstate.isUnsignedHashMatches() ? "OK" : "Invalid"));
+
+                                if (sstate.isDateValid() 
+                                    && sstate.isEmailMatches() 
+                                    && sstate.isUnsignedHashMatches()) {
+                                    output += ("\n\nSignature is valid.");
+                                    returnval = 0;
+                                } else {
+                                    output += ("\n\nSignature is not valid.");
+                                    returnval = 2;
+                                }
                             }
-                        }
                         }
                         break;
 
                     case ACTION_WRITESIGN:
-                        {// Write signature
-                        WriteSignature.writeSignature(documentPath, daysValidInt, useWeakSign);
-                        output += ("\nOK");
-                        returnval = 0;
+                        {
+                            // Write signature
+                            WriteSignature.writeSignature(documentPath, daysValidInt, useWeakSign);
+                            output += ("\nOK");
+                            returnval = 0;
                         }
                         break;
 
                     case ACTION_REGISTER:
-                        {// Register identity
-                        Identity identity = new Identity(name, mailAddress, UUID.randomUUID().toString(), CoreSHA.hash512(password, mailAddress));
-                        UserIdentity.addIdentity(identity);
-                        Database.db.get("users").getAsJsonArray().add(identity.toJson());
-                        Database.save();
-                        UserIdentity.setCurrentIdentity(identity);
-                        returnval = 0;
+                        {
+                            // Register identity
+                            Identity identity = new Identity(name, mailAddress, UUID.randomUUID().toString(), CoreSHA.hash512(password, mailAddress));
+                            UserIdentity.addIdentity(identity);
+                            Database.db.get("users").getAsJsonArray().add(identity.toJson());
+                            Database.save();
+                            UserIdentity.setCurrentIdentity(identity);
+                            returnval = 0;
                         }
                         break;
 
                     default:
                         output += ("Unknown action: " + actionFlag);
-                        returnval = 1;
+                        returnval = 3;
                 }
             }
 

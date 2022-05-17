@@ -77,4 +77,8 @@ public class Main {
             System.out.println("Update failed");
         }
     }
+
+    public static void log(String s) {
+        // System.out.println(s);
+    }
 }
