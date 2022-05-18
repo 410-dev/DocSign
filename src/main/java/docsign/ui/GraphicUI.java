@@ -13,7 +13,7 @@ public class GraphicUI {
         frame = new JFrame("DocSign");
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 500);
+        frame.setSize(500, 160);
         frame.setResizable(false);
 
         loadScene(new Login());
