@@ -35,6 +35,7 @@ public class CommandLineUI {
     private String daysValid;
     private int daysValidInt;
     private String mailToVerify;
+    private String mininote;
 
     public String output = "";
 
@@ -54,6 +55,8 @@ public class CommandLineUI {
         // name
         name = getParameter("-n");
 
+        // mini note
+        mininote = getParameter("-nt");
 
         // Valid date
         daysValid = getParameter("-dv");
@@ -170,6 +173,7 @@ public class CommandLineUI {
                     case ACTION_WRITESIGN:
                         {
                             // Write signature
+                            WriteSignature.writeSignature(documentPath, daysValidInt, mininote);
                             output += ("\nOK");
                             returnval = 0;
                         }

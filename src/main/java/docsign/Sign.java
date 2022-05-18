@@ -21,16 +21,18 @@ public class Sign {
     private String email;
     private long signedAt;
     private long validthrough;
+    @Setter @Getter private String mininote;
     @Setter private String unsignedHash;
     
     @Getter @Setter private SignState signState;
 
-    public Sign(String version, String name, String email, long signedAt, long validthrough, String unsignedHash) throws Exception {
+    public Sign(String version, String name, String email, long signedAt, long validthrough, String mininote, String unsignedHash) throws Exception {
         this.version = version;
         this.name = name;
         this.email = email;
         this.signedAt = signedAt;
         this.validthrough = validthrough;
+        this.mininote = mininote;
         this.unsignedHash = unsignedHash;
     }
 
@@ -64,6 +66,7 @@ public class Sign {
         obj.addProperty("email", email);
         obj.addProperty("signedAt", signedAt);
         obj.addProperty("validthrough", validthrough);
+        obj.addProperty("mininote", mininote);
         obj.addProperty("unsignedHash", unsignedHash);
         return obj;
     }
@@ -87,6 +90,7 @@ public class Sign {
         s += "\nSigned At: " + getSignedDate();
         s += "\nValid Through: " + getValidDate();
         s += "\nCurrently valid: " + ((System.currentTimeMillis() / 1000L < validthrough) ? "Yes" : "No");
+        s += "\nMini note: " + mininote;
         s += "\nUnsigned Hash: " + unsignedHash;
         return s;
     }
@@ -112,6 +116,7 @@ public class Sign {
                 obj.get("email").getAsString(),
                 obj.get("signedAt").getAsLong(),
                 obj.get("validthrough").getAsLong(),
+                obj.get("mininote").getAsString(),
                 obj.get("unsignedHash").getAsString()
         );
     }

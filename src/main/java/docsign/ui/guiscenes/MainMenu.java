@@ -5,6 +5,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.MouseInputAdapter;
 
@@ -24,6 +26,9 @@ public class MainMenu extends JPanel implements Scene {
 
     private JLabel daysValidLabel = new JLabel("Days Valid");
     private JTextField daysValidField = new JTextField();
+
+    private JLabel miniNoteLabel = new JLabel("Mini Note");
+    private JTextField miniNoteField = new JTextField();
 
     private JButton signButton = new JButton("Sign");
     private JButton verifyButton = new JButton("Verify");
@@ -60,17 +65,21 @@ public class MainMenu extends JPanel implements Scene {
         daysValidField.setText("30");
         add(daysValidField);
 
-        signButton.setBounds(10, 130, 150, 25);
+        miniNoteLabel.setBounds(10, 130, 180, 25);
+        add(miniNoteLabel);
+
+        miniNoteField.setBounds(180, 130, 300, 25);
+        add(miniNoteField);
+
+        signButton.setBounds(10, 170, 150, 25);
         add(signButton);
 
-        verifyButton.setBounds(160, 130, 150, 25);
+        verifyButton.setBounds(160, 170, 150, 25);
         add(verifyButton);
 
-        readSignButton.setBounds(310, 130, 150, 25);
+        readSignButton.setBounds(310, 170, 150, 25);
         add(readSignButton);
 
-        output.setBounds(10, 200, 450, 600);
-        add(output);
 
         selectFile.addMouseListener(
             new MouseInputAdapter() {
@@ -125,6 +134,7 @@ public class MainMenu extends JPanel implements Scene {
     private void performSign() {
         CommandLineUI cli = new CommandLineUI();
         cli.setActionFlag(cli.ACTION_WRITESIGN);
+        cli.setMininote(miniNoteField.getText());
         actionPerform(cli);
     }
 

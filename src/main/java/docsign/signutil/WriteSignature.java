@@ -7,8 +7,10 @@ import docsign.util.CoreHEX;
 import docsign.util.CoreSHA;
 
 public class WriteSignature {
+    public static void writeSignature(String document, int daysValid, String mininote) throws Exception {
         Sign s = new Sign(daysValid);
         s.setSignState(new SignState());
+        s.setMininote(mininote);
 
         // Write signature to file
         String fileHex = CoreHEX.readFileToHex(document);
