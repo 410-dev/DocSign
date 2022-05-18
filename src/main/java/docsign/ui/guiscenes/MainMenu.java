@@ -1,7 +1,6 @@
 package docsign.ui.guiscenes;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,7 +33,8 @@ public class MainMenu extends JPanel implements Scene {
     private JButton verifyButton = new JButton("Verify");
     private JButton readSignButton = new JButton("Read Sign");
 
-    private JLabel output = new JLabel();
+    private JScrollPane scrollPane = new JScrollPane();
+    private JTextArea output = new JTextArea();
 
     private static String password = "";
 
@@ -80,6 +80,36 @@ public class MainMenu extends JPanel implements Scene {
         readSignButton.setBounds(310, 170, 150, 25);
         add(readSignButton);
 
+        output.setEditable(false);
+        output.setLineWrap(true);
+        scrollPane = new JScrollPane(output);
+        scrollPane.setBounds(10, 210, 465, 550);
+        add(scrollPane);
+
+        signButton.setEnabled(false);
+        verifyButton.setEnabled(false);
+        readSignButton.setEnabled(false);
+
+        Thread t = new Thread() {
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (emailField.getText().length() > 0) {
+                        verifyButton.setEnabled(true);
+                        readSignButton.setEnabled(true);
+                    }else{
+                        verifyButton.setEnabled(false);
+                        readSignButton.setEnabled(false);
+                    }
+                }
+            }
+        };   
+        
+        t.start();
 
         selectFile.addMouseListener(
             new MouseInputAdapter() {
@@ -121,6 +151,7 @@ public class MainMenu extends JPanel implements Scene {
     }
 
     private void performSelectFile() {
+        
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.APPROVE_OPTION);
         int returnValue = fileChooser.showOpenDialog(this);
@@ -129,6 +160,7 @@ public class MainMenu extends JPanel implements Scene {
         }
 
         fileChooser.setVisible(false);
+        signButton.setEnabled(true);
     }
 
     private void performSign() {
@@ -182,7 +214,7 @@ public class MainMenu extends JPanel implements Scene {
                 break;
 
             case 255:
-                cli.output = "An error occurred wile processing.";
+                cli.output = "An error occurred wile processing. Perhaps the author is not a valid user?";
                 break;
 
             default:
@@ -190,7 +222,8 @@ public class MainMenu extends JPanel implements Scene {
                 break;
         }
 
-        output.setText("<html>" + cli.output.replace("\n", "<br>") + "</html>");
+        // output.setText("<html>" + cli.output.replace("\n", "<br>") + "</html>");
+        output.setText(cli.output);
     }
 
     @Override
