@@ -10,7 +10,7 @@ import docsign.util.CoreSHA;
 
 public class ReadSignature {
     
-    public static Sign readSign(String filePath, String mailToVerify, boolean useWeakSign) throws Exception {
+    public static Sign readSign(String filePath, String mailToVerify) throws Exception {
         Main.log("Reading signature from file: " + filePath);
 
         // Read file as hexadecimal
@@ -51,7 +51,7 @@ public class ReadSignature {
         
         
         // Decrypt
-        str = CoreAES.decrypt(str, Sign.SIGN_PASS);
+        str = CoreAES.decrypt(str, mailToVerify);
         Main.log("SIGN: " + str);
 
         // Get unsigned hash
@@ -68,10 +68,6 @@ public class ReadSignature {
         state.setUnsignedContentActualSHA(unsignedHash);
         state.setUnsignedContentExpectedSHA(s.getUnsignedHash());
         state.checkValidty(s, mailToVerify);
-
-        if (useWeakSign) {
-            state.setEmailMatches(true);
-        }
 
         s.setSignState(state);
         

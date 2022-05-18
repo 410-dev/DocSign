@@ -7,8 +7,7 @@ import docsign.util.CoreHEX;
 import docsign.util.CoreSHA;
 
 public class WriteSignature {
-    public static void writeSignature(String document, int daysValid, boolean useWeakSign) throws Exception {
-        Sign s = new Sign(daysValid, useWeakSign);
+        Sign s = new Sign(daysValid);
         s.setSignState(new SignState());
 
         // Write signature to file

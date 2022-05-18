@@ -36,8 +36,6 @@ public class CommandLineUI {
     private int daysValidInt;
     private String mailToVerify;
 
-    private boolean useWeakSign;
-
     public String output = "";
 
     public void run(String[] args) {
@@ -56,8 +54,6 @@ public class CommandLineUI {
         // name
         name = getParameter("-n");
 
-        // Weak sign
-        useWeakSign = String.join("<SPC>", args).contains("<SPC>-w");
 
         // Valid date
         daysValid = getParameter("-dv");
@@ -128,7 +124,7 @@ public class CommandLineUI {
                     case ACTION_READSIGN:
                         {
                             // Read and verify signature
-                            Sign s = ReadSignature.readSign(documentPath, mailToVerify, useWeakSign);
+                            Sign s = ReadSignature.readSign(documentPath, mailToVerify);
                             if (s == null) {
                                 output += ("\nSignature not found.");
                                 returnval = 1;
@@ -142,7 +138,7 @@ public class CommandLineUI {
                     case ACTION_VERIFY:
                         {
                             // Verify signature
-                            Sign s = ReadSignature.readSign(documentPath, mailToVerify, useWeakSign);
+                            Sign s = ReadSignature.readSign(documentPath, mailToVerify);
                             SignState sstate = s.getSignState();
 
                             if (s == null || sstate == null) {
@@ -174,7 +170,6 @@ public class CommandLineUI {
                     case ACTION_WRITESIGN:
                         {
                             // Write signature
-                            WriteSignature.writeSignature(documentPath, daysValidInt, useWeakSign);
                             output += ("\nOK");
                             returnval = 0;
                         }

@@ -12,7 +12,6 @@ import lombok.Setter;
 @Getter
 public class Sign {
 
-    public static final String SIGN_PASS = "44CA24B7-3FD0-4B1B-9331-538948B806D7";
     public static final String HEADER = "<SIGHEAD>";
     public static final String FOOTER = "<SIGFOOT>";
     public static final String VERSION = "1.0";
@@ -35,10 +34,10 @@ public class Sign {
         this.unsignedHash = unsignedHash;
     }
 
-    public Sign(int daysValid, boolean useWeakSign) throws Exception {
+    public Sign(int daysValid) throws Exception {
         this.version = VERSION;
         this.name = UserIdentity.getCurrentIdentity().getName();
-        this.email = useWeakSign ? "" : UserIdentity.getCurrentIdentity().getEmail();
+        this.email = UserIdentity.getCurrentIdentity().getEmail();
         this.signedAt = System.currentTimeMillis() / 1000;
         this.validthrough = this.signedAt + (60 * 60 * 24 * daysValid);
     }
@@ -72,7 +71,7 @@ public class Sign {
     public String toString() {
         String s = "";
         try {
-            s += CoreAES.encrypt(toJson().toString(), SIGN_PASS);
+            s += CoreAES.encrypt(toJson().toString(), email);
         }catch(Exception e) {
             s = "null";
         }

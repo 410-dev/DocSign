@@ -29,8 +29,6 @@ public class MainMenu extends JPanel implements Scene {
     private JButton verifyButton = new JButton("Verify");
     private JButton readSignButton = new JButton("Read Sign");
 
-    private JCheckBox useWeakSign = new JCheckBox("Use Weak Sign");
-
     private JLabel output = new JLabel();
 
     private static String password = "";
@@ -70,9 +68,6 @@ public class MainMenu extends JPanel implements Scene {
 
         readSignButton.setBounds(310, 130, 150, 25);
         add(readSignButton);
-
-        useWeakSign.setBounds(10, 160, 150, 25);
-        add(useWeakSign);
 
         output.setBounds(10, 200, 450, 600);
         add(output);
@@ -151,7 +146,6 @@ public class MainMenu extends JPanel implements Scene {
         cli.setDaysValidInt(Integer.parseInt(daysValidField.getText()));
         cli.setDaysValid(daysValidField.getText());
         cli.setPassword(password);
-        cli.setUseWeakSign(useWeakSign.isSelected());
         cli.setMailAddress(UserIdentity.getCurrentIdentity().getEmail());
 
         int result = cli.action();
