@@ -10,7 +10,7 @@ public class GraphicUI {
     public static JFrame frame;
 
     public static void run() {
-        frame = new JFrame("DocSign");
+        frame = new JFrame("DocSign II");
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 160);
