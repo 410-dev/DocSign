@@ -117,7 +117,8 @@ public class CommandLineUI {
 
     public int action() {
         try{
-            ArrayList<String> filePaths = RecursiveFileSearch.search(documentPath);
+            ArrayList<String> filePaths = new ArrayList<>();
+            if (!actionFlag.equals(ACTION_REGISTER)) filePaths = RecursiveFileSearch.search(documentPath);
 
             output = "";
             int returnval = 0;
