@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.UUID;
 
+import javax.swing.JOptionPane;
+
 import docsign.Database;
 import docsign.Identity;
 import docsign.Sign;
@@ -180,22 +182,20 @@ public class CommandLineUI {
                         }
                         break;
 
-                    case ACTION_REGISTER:
-                        {
-                            // Register identity
-                            Identity identity = new Identity(name, mailAddress, UUID.randomUUID().toString(), CoreSHA.hash512(password, mailAddress));
-                            UserIdentity.addIdentity(identity);
-                            Database.db.get("users").getAsJsonArray().add(identity.toJson());
-                            Database.save();
-                            UserIdentity.setCurrentIdentity(identity);
-                            returnval = 0;
-                        }
-                        break;
-
                     default:
                         output += ("Unknown action: " + actionFlag);
                         returnval = 3;
                 }
+            }
+
+            if (actionFlag == ACTION_REGISTER) {
+                // Register identity
+                Identity identity = new Identity(name, mailAddress, UUID.randomUUID().toString(), CoreSHA.hash512(password, mailAddress));
+                UserIdentity.addIdentity(identity);
+                Database.db.get("users").getAsJsonArray().add(identity.toJson());
+                Database.save();
+                UserIdentity.setCurrentIdentity(identity);
+                returnval = 0;
             }
 
             System.out.println(output);
